@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>DNS Resolver Client</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    input, select, button { padding: 8px; margin-right: 8px; }
+    pre { background: #111; color: #0f0; padding: 12px; }
+  </style>
+</head>
+<body>
+  <h2>DNS Resolver Client (Remote)</h2>
+
+  <label>Server:</label>
+  <input id="server" value="http://192.168.86.21:8053" size="28"/>
+
+  <label>Domain:</label>
+  <input id="domain" value="github.com"/>
+
+  <label>Type:</label>
+  <select id="type">
+    <option>A</option>
+    <option>AAAA</option>
+    <option>MX</option>
+    <option>NS</option>
+    <option>TXT</option>
+    <option>CNAME</option>
+  </select>
+
+  <button onclick="resolve()">Resolve</button>
+
+  <h3>Response</h3>
+  <pre id="out">Waiting…</pre>
+
+  <script>
+    async function resolve() {
+      const server = document.getElementById('server').value.trim();
+      const domain = document.getElementById('domain').value.trim();
+      const type = document.getElementById('type').value;
+
+      const url = `${server}/resolve?domain=${encodeURIComponent(domain)}&type=${encodeURIComponent(type)}`;
+      document.getElementById('out').textContent = "Loading...";
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        document.getElementById('out').textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        document.getElementById('out').textContent = "Error: " + e.message;
+      }
+    }
+  </script>
+</body>
+</html>
